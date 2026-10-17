@@ -1,0 +1,488 @@
+
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>AçaíMV Delivery</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- CABEÇALHO -->
+    <header class="site-header">
+        <a class="brand" href="#" aria-label="AçaíMV início">
+            <img
+                src="aimv_logo.png"
+                alt="Logo AçaíMV"
+                class="brand-logo"
+                width="110"
+                height="100"
+            >
+        </a>
+
+        <nav class="top-nav" aria-label="Navegação principal">
+            <a href="#cardapio">Cardápio</a>
+            <a href="#sobre">Sobre</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- CARDÁPIO DOS CLIENTES -->
+        <section class="menu-section" id="cardapio">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">ESCOLHA O QUE TE FAZ FELIZ</span>
+                    <h2>Nosso cardápio</h2>
+                    <p>Encontre seus produtos favoritos por categoria.</p>
+                </div>
+
+                <label class="search-box">
+                    <span>⌕</span>
+                    <input
+                        id="searchInput"
+                        type="search"
+                        placeholder="Buscar no cardápio..."
+                        aria-label="Buscar produtos"
+                    >
+                </label>
+            </div>
+
+            <!-- FILTROS DE CATEGORIA -->
+            <nav
+                class="category-row"
+                id="categories"
+                aria-label="Categorias do cardápio"
+            >
+                <!-- As categorias são carregadas pelo app.js -->
+            </nav>
+
+            <div class="demo-notice" id="demoNotice">
+                <span>i</span>
+                <strong>Cardápio demonstrativo:</strong>
+                produtos e preços são exemplos e devem ser confirmados pela AçaíMV.
+            </div>
+
+            <!-- PRODUTOS FILTRADOS POR CATEGORIA -->
+            <div
+                class="product-grid"
+                id="productGrid"
+                aria-live="polite"
+            >
+                <!-- Os produtos são carregados pelo app.js -->
+            </div>
+
+            <div class="empty-state hidden" id="emptyState">
+                Não encontramos produtos nesta categoria ou com essa busca.
+                Tente selecionar outra categoria.
+            </div>
+
+        </section>
+
+        <!-- SOBRE A EMPRESA -->
+        <section class="about-strip" id="sobre">
+
+            <div class="about-icon">✳</div>
+
+            <div>
+                <span class="eyebrow">BEM-VINDO À AÇAÍMV</span>
+                <h2>Um sabor para chamar de seu.</h2>
+                <p>
+                    Explore nossas opções e encontre a combinação
+                    perfeita para o seu dia.
+                </p>
+            </div>
+
+            <a href="#cardapio" class="text-link">
+                Ver cardápio <span>→</span>
+            </a>
+
+        </section>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer>
+
+        <a class="brand footer-brand" href="#">
+            <img
+                src="aimv_logo.png"
+                alt="Logo AçaíMV"
+                class="brand-logo"
+                width="110"
+                height="100"
+            >
+        </a>
+
+        <div class="footer-info">
+            <span>
+                © <span id="year"></span>
+                AçaíMV. Todos os direitos reservados.
+            </span>
+
+            <span class="footer-demo">Versão demonstrativa</span>
+
+            <button
+                class="admin-open-link"
+                id="adminOpen"
+                type="button"
+                style="background:none; border:none; color:inherit; font:inherit; text-decoration:underline; cursor:pointer; padding:0; margin-left:10px;"
+            >
+                Acesso Restrito
+            </button>
+        </div>
+
+    </footer>
+
+    <!-- MODAL ADMINISTRATIVO -->
+    <div
+        class="modal-backdrop hidden"
+        id="adminModal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+    >
+
+        <!-- LOGIN -->
+        <section
+            class="admin-panel"
+            id="loginSection"
+            style="max-width:400px; margin:40px auto;"
+        >
+
+            <div class="admin-head">
+                <div>
+                    <span class="eyebrow">AUTENTICAÇÃO</span>
+                    <h2 id="modalTitle">Identifique-se</h2>
+                </div>
+
+                <button
+                    class="icon-btn"
+                    id="closeLogin"
+                    type="button"
+                    aria-label="Fechar login"
+                >
+                    ×
+                </button>
+            </div>
+
+            <form
+                id="loginForm"
+                style="display:flex; flex-direction:column; gap:15px; margin-top:20px;"
+            >
+
+                <label style="display:flex; flex-direction:column; gap:5px;">
+                    Usuário
+                    <input
+                        type="text"
+                        id="loginUser"
+                        required
+                        placeholder="Digite o usuário"
+                        autocomplete="username"
+                        style="padding:8px; border:1px solid #ccc; border-radius:4px;"
+                    >
+                </label>
+
+                <label style="display:flex; flex-direction:column; gap:5px;">
+                    Senha
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        required
+                        placeholder="Digite a senha"
+                        autocomplete="current-password"
+                        style="padding:8px; border:1px solid #ccc; border-radius:4px;"
+                    >
+                </label>
+
+                <p
+                    id="loginError"
+                    style="color:red; font-size:14px; margin:0; display:none;"
+                >
+                    Usuário ou senha incorretos.
+                </p>
+
+                <button
+                    class="primary-btn"
+                    type="submit"
+                    style="align-self:flex-end; margin-top:10px;"
+                >
+                    Entrar
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- PAINEL ADMINISTRATIVO -->
+        <section
+            class="admin-panel hidden"
+            id="adminPanelSection"
+        >
+
+            <div class="admin-head">
+                <div>
+                    <span class="eyebrow">PAINEL DE CONTROLE</span>
+                    <h2>Área administrativa</h2>
+                </div>
+
+                <button
+                    class="icon-btn"
+                    id="closeAdmin"
+                    type="button"
+                    aria-label="Fechar painel administrativo"
+                >
+                    ×
+                </button>
+            </div>
+
+            <div class="admin-warning">
+                <strong>Importante:</strong>
+                as alterações são salvas somente neste navegador.
+                Esta versão não possui autenticação segura via servidor.
+            </div>
+
+            <!-- CADASTRO E EDIÇÃO DE PRODUTOS -->
+            <form id="productForm" class="product-form">
+
+                <input type="hidden" id="productId">
+
+                <h3>Cadastrar ou editar produto</h3>
+
+                <div class="form-grid">
+
+                    <label>
+                        Nome do produto
+                        <input
+                            id="productName"
+                            required
+                            maxlength="80"
+                            placeholder="Ex.: Açaí 500 ml"
+                        >
+                    </label>
+
+                    <label>
+                        Categoria do produto
+                        <select id="productCategory" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="Açaís">Açaís</option>
+                            <option value="Hambúrgueres">Hambúrgueres</option>
+                            <option value="Bebidas">Bebidas</option>
+                            <option value="Sobremesas">Sobremesas</option>
+                            <option value="Combos">Combos</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Preço (R$)
+                        <input
+                            id="productPrice"
+                            required
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="16,00"
+                        >
+                    </label>
+
+                    <label>
+                         
+<label class="wide">
+    Foto do produto
+    <input
+        id="productImage"
+        type="file"
+        accept="image/*"
+    >
+    <small>Selecione uma imagem do computador ou celular.</small>
+
+    <img
+        id="productImagePreview"
+        alt="Prévia da foto do produto"
+        hidden
+        style="display:none; width:180px; height:140px; object-fit:cover; border-radius:10px; margin-top:10px;"
+    >
+</label>
+
+                        <input
+                            id="productImage"
+                            type="url"
+                            placeholder="https://..."
+                        >
+                    </label>
+
+                    <label class="wide">
+                        Descrição
+                        <input
+                            id="productDescription"
+                            maxlength="180"
+                            placeholder="Conte um pouco sobre o produto"
+                        >
+                    </label>
+
+                </div>
+
+                <div class="form-actions">
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        id="cancelEdit"
+                    >
+                        Limpar
+                    </button>
+
+                    <button
+                        class="primary-btn"
+                        type="submit"
+                        id="saveProduct"
+                    >
+                        Salvar produto <span>+</span>
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- LISTA ADMINISTRATIVA POR CATEGORIA -->
+            <div class="admin-list-head">
+                <div>
+                    <h3>Produtos cadastrados</h3>
+                    <p>
+                        Organize e localize os produtos por categoria.
+                    </p>
+                </div>
+
+                <button class="reset-btn" id="resetDemo" type="button">
+                    Restaurar exemplos
+                </button>
+            </div>
+
+            <div class="admin-category-filter">
+                <label for="adminCategoryFilter">
+                    Filtrar produtos por categoria
+                </label>
+
+                <select id="adminCategoryFilter">
+                    <option value="todas">Todas as categorias</option>
+                    <option value="Açaís">Açaís</option>
+                    <option value="Hambúrgueres">Hambúrgueres</option>
+                    <option value="Bebidas">Bebidas</option>
+                    <option value="Sobremesas">Sobremesas</option>
+                    <option value="Combos">Combos</option>
+                </select>
+            </div>
+
+            <div
+                id="adminProductList"
+                class="admin-product-list"
+            >
+                <!-- Produtos administrativos carregados pelo app.js -->
+            </div>
+
+            <!-- CONFIGURAÇÕES DE ACESSO -->
+            <div
+                class="admin-list-head"
+                style="margin-top:40px; border-top:1px solid #eee; padding-top:20px;"
+            >
+                <h3>Configurações de acesso</h3>
+            </div>
+
+            <form
+                id="credentialsForm"
+                class="product-form"
+                style="margin-top:10px;"
+            >
+
+                <div class="form-grid">
+
+                    <label>
+                        Novo usuário
+                        <input
+                            id="newAdminUser"
+                            required
+                            placeholder="admin"
+                            autocomplete="username"
+                        >
+                    </label>
+
+                    <label>
+                        Nova senha
+                        <input
+                            id="newAdminPassword"
+                            required
+                            type="password"
+                            placeholder="Nova senha"
+                            autocomplete="new-password"
+                        >
+                    </label>
+
+                </div>
+
+                <div class="form-actions" style="margin-top:10px;">
+                    <button
+                        class="primary-btn"
+                        type="submit"
+                        id="saveCredentials"
+                    >
+                        Atualizar acesso
+                    </button>
+                </div>
+
+                <p
+                    id="credentialsFeedback"
+                    style="color:green; font-size:14px; margin-top:5px; display:none;"
+                >
+                    Acesso atualizado com sucesso!
+                </p>
+
+            </form>
+
+            <!-- IMPORTAÇÃO E EXPORTAÇÃO -->
+            <div class="admin-footer" style="margin-top:30px;">
+
+                <button
+                    class="secondary-btn"
+                    id="exportData"
+                    type="button"
+                >
+                    Exportar catálogo (JSON)
+                </button>
+
+                <label class="import-btn">
+                    Importar catálogo
+                    <input
+                        id="importData"
+                        type="file"
+                        accept="application/json,.json"
+                        hidden
+                    >
+                </label>
+
+            </div>
+
+            <p
+                class="admin-feedback"
+                id="adminFeedback"
+                role="status"
+            ></p>
+
+        </section>
+
+    </div>
+
+    <!-- SCRIPT DO SITE -->
+    <script src="app.js"></script>
+
+</body>
+</html>
+```
