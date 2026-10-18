@@ -152,18 +152,19 @@ function safeText(value) {
   );
 }
 function categoryIcon(category) {
-  return (
-    {
-      Açaí: "🍇",
-      Hambúrgueres: "🍔",
-      Pastéis: "🥟",
-      "Milk-shakes": "🥤",
-      Bebidas: "🧃",
-      Sobremesas: "🍨",
-      Combos: "🍟",
-    }[category] || "✦"
-  );
+  const icons = {
+    "Todos": '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg>',
+    "Açaí": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16l-1.5 7a3 3 0 0 1-3 2.4h-7A3 3 0 0 1 5.5 17L4 10Z"/><path d="M4 10c2-3 5-4 8-4s6 1 8 4M12 6l2-3M8 7 6 4M15 8l3-2"/></svg>',
+    "Hambúrgueres": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 0 1 16 0H4Z"/><path d="M3 13h18l-1 3H4l-1-3ZM5 19h14"/><path d="M8 7h.01M12 5h.01M16 7h.01"/></svg>',
+    "Pastéis": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15 15 4a3 3 0 0 1 4 0l1 1a3 3 0 0 1 0 4L9 20a3 3 0 0 1-4 0l-1-1a3 3 0 0 1 0-4Z"/><path d="m7 16 1 1m2-4 1 1m2-4 1 1m2-4 1 1"/></svg>',
+    "Milk-shakes": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8h10l-1 12H8L7 8Z"/><path d="M9 8 14 3M12 8l5-5M9 12h6M10 16h4"/></svg>',
+    "Bebidas": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h8l-1 13H9L8 7Z"/><path d="M10 4h4M12 4V2M10 11l4 5M14 11l-4 5"/></svg>',
+    "Sobremesas": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9h14l-1 10H6L5 9Z"/><path d="M4 9c0-2 2-3 4-2 1-3 6-3 8 0 2-1 4 0 4 2M12 7V4M12 4c-2 0-3-1-3-2"/></svg>',
+    "Combos": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M8 8 7 3M12 8V2M16 8l1-5M9 12v4M12 12v4M15 12v4"/></svg>'
+  };
+  return icons[category] || '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"/></svg>';
 }
+
 function renderCategories() {
   const cats = [
     ...CATEGORIES.filter(
@@ -175,8 +176,10 @@ function renderCategories() {
   ];
   $("categories").innerHTML = cats
     .map(
-      (c) =>
-        `<button class="category-chip ${activeCategory === c ? "active" : ""}" data-category="${safeText(c)}">${c === "Todos" ? "✦" : categoryIcon(c)} &nbsp;${safeText(c)}</button>`,
+      (c) => {
+        const count = c === "Todos" ? products.length : products.filter((p) => p.category === c).length;
+        return `<button class="category-chip ${activeCategory === c ? "active" : ""}" data-category="${safeText(c)}" type="button"><span class="category-symbol" aria-hidden="true">${categoryIcon(c)}</span><span>${safeText(c)}</span><span class="category-count">${count}</span></button>`;
+      },
     )
     .join("");
   $("categories")
@@ -191,82 +194,65 @@ function renderCategories() {
 }
 
 function renderProducts() {
-  const query = $("searchInput").value
-    .trim()
-    .toLocaleLowerCase("pt-BR");
-
+  const query = $("searchInput").value.trim().toLocaleLowerCase("pt-BR");
   const filtered = products.filter((p) =>
     (activeCategory === "Todos" || p.category === activeCategory) &&
-    `${p.name} ${p.description || ""} ${p.category}`
-      .toLocaleLowerCase("pt-BR")
-      .includes(query)
+    `${p.name} ${p.description || ""} ${p.category}`.toLocaleLowerCase("pt-BR").includes(query)
   );
 
-  // Define a ordem das categorias no cardápio
+  const summary = $("menuSummary");
+  if (summary) {
+    summary.textContent = `${filtered.length} ${filtered.length === 1 ? "opção" : "opções"}`;
+  }
+
+  // Agrupa os resultados por categoria para que cada tipo de produto tenha
+  // um título próprio. A ordem segue a lista de categorias do cardápio.
   const categoryOrder = [
-    ...CATEGORIES.filter((c) => c !== "Todos"),
-    ...new Set(products.map((p) => p.category))
+    ...CATEGORIES.filter((category) => category !== "Todos"),
+    ...new Set(products.map((product) => product.category).filter(
+      (category) => !CATEGORIES.includes(category)
+    )),
   ];
+  const grouped = new Map();
+  categoryOrder.forEach((category) => {
+    const items = filtered.filter((product) => product.category === category);
+    if (items.length) grouped.set(category, items);
+  });
 
-  const categoriesToShow = categoryOrder.filter(
-    (category, index, array) =>
-      array.indexOf(category) === index &&
-      filtered.some((p) => p.category === category)
-  );
-
-  // Monta os produtos de cada categoria separadamente
-  $("productGrid").innerHTML = categoriesToShow.map((category) => {
-    const categoryProducts = filtered.filter(
-      (p) => p.category === category
-    );
-
-    return `
-      <section class="menu-category-section">
-        <div class="menu-category-heading">
-          <h2>${categoryIcon(category)} ${safeText(category)}</h2>
-          <span>${categoryProducts.length}
-            ${categoryProducts.length === 1 ? "produto" : "produtos"}
-          </span>
-        </div>
-
-        <div class="product-grid menu-category-products">
-          ${categoryProducts.map((p) => `
-            <article class="product-card">
-              <div class="product-image">
-                ${
-                  p.image
-                    ? `<img
-                        loading="lazy"
-                        src="${safeText(p.image)}"
-                        alt="${safeText(p.name)}"
-                        onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;>${categoryIcon(p.category)}</div>'"
-                      >`
-                    : `<div class="image-placeholder">${categoryIcon(p.category)}</div>`
-                }
+  $("productGrid").innerHTML = [...grouped.entries()].map(([category, items]) => `
+    <section class="menu-category-section" aria-labelledby="category-${safeText(category).replace(/[^a-z0-9]+/gi, "-")}">
+      <div class="menu-category-heading">
+        <h2 id="category-${safeText(category).replace(/[^a-z0-9]+/gi, "-")}">
+          <span class="menu-category-icon" aria-hidden="true">${categoryIcon(category)}</span>
+          ${safeText(category)}
+        </h2>
+        <span>${items.length} ${items.length === 1 ? "produto" : "produtos"}</span>
+      </div>
+      <div class="menu-category-products">
+        ${items.map((p) => `
+          <article class="product-card">
+            <div class="product-image">
+              ${p.image
+                ? `<img loading="lazy" src="${safeText(p.image)}" alt="${safeText(p.name)}" onerror="this.hidden=true;this.nextElementSibling.hidden=false">`
+                : ""}
+              <div class="image-placeholder" ${p.image ? "hidden" : ""}>${categoryIcon(p.category)}</div>
+            </div>
+            <div class="product-info">
+              <div class="product-category-label">${categoryIcon(p.category)}<span>${safeText(p.category)}</span></div>
+              <div class="product-meta">
+                <h3>${safeText(p.name)}</h3>
+                ${p.tag ? `<span class="product-tag">${safeText(p.tag)}</span>` : ""}
               </div>
-
-              <div class="product-info">
-                <div class="product-meta">
-                  <h3>${safeText(p.name)}</h3>
-                  <span class="product-price">${money(p.price)}</span>
-                </div>
-
-                <p>${safeText(
-                  p.description || "Consulte os detalhes deste produto."
-                )}</p>
-
-                ${
-                  p.tag
-                    ? `<span class="product-tag">${safeText(p.tag)}</span>`
-                    : ""
-                }
+              <p>${safeText(p.description || "Consulte os detalhes deste produto.")}</p>
+              <div class="product-bottom">
+                <span class="product-price">${money(p.price)}</span>
               </div>
-            </article>
-          `).join("")}
-        </div>
-      </section>
-    `;
-  }).join("");
+            </div>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `).join("");
 
   $("emptyState").classList.toggle("hidden", filtered.length > 0);
 }
@@ -284,11 +270,21 @@ function fillCategorySelect() {
     .join("");
   if ([...$("productCategory").options].some((o) => o.value === current))
     $("productCategory").value = current;
+  const adminFilter = $("adminCategoryFilter");
+  if (adminFilter) {
+    const selected = adminFilter.value || "todas";
+    adminFilter.innerHTML = '<option value="todas">Todas as categorias</option>' +
+      [...new Set(products.map((p) => p.category))].sort((a, b) => a.localeCompare(b, "pt-BR"))
+        .map((c) => `<option value="${safeText(c)}">${safeText(c)}</option>`).join("");
+    if ([...adminFilter.options].some((o) => o.value === selected)) adminFilter.value = selected;
+  }
 }
 function renderAdminList() {
   if (!$("adminProductList")) return;
+  const selectedCategory = $("adminCategoryFilter")?.value || "todas";
+  const visibleProducts = selectedCategory === "todas" ? products : products.filter((p) => p.category === selectedCategory);
   $("adminProductList").innerHTML =
-    products
+    visibleProducts
       .map(
         (p) =>
           `<div class="admin-product"><div class="mini-placeholder">${categoryIcon(p.category)}</div><div class="admin-product-main"><strong>${safeText(p.name)}</strong><small>${safeText(p.category)}</small></div><span class="admin-product-price">${money(p.price)}</span><div class="admin-actions"><button type="button" data-edit="${safeText(p.id)}">Editar</button><button type="button" class="delete-btn" data-delete="${safeText(p.id)}" aria-label="Excluir ${safeText(p.name)}">Excluir</button></div></div>`,
@@ -321,6 +317,8 @@ function resetForm() {
   $("productForm").reset();
   $("productId").value = "";
   $("saveProduct").innerHTML = "Salvar produto <span>＋</span>";
+  if ($("productImageFile")) $("productImageFile").value = "";
+  if ($("productImagePreview")) { $("productImagePreview").removeAttribute("src"); $("productImagePreview").hidden = true; $("productImagePreview").style.display = "none"; }
 }
 function editProduct(id) {
   const p = products.find((x) => x.id === id);
@@ -329,7 +327,11 @@ function editProduct(id) {
   $("productName").value = p.name;
   $("productCategory").value = p.category;
   $("productPrice").value = p.price;
-  $("productImage").value = p.image || "";
+  $("productImageUrl").value = (p.image && !p.image.startsWith("data:")) ? p.image : "";
+  $("productImageFile").value = "";
+  const preview = $("productImagePreview");
+  if (p.image) { preview.src = p.image; preview.hidden = false; preview.style.display = "block"; }
+  else { preview.removeAttribute("src"); preview.hidden = true; preview.style.display = "none"; }
   $("productDescription").value = p.description || "";
   $("saveProduct").innerHTML = "Atualizar produto <span>✓</span>";
   $("productName").focus();
@@ -344,7 +346,62 @@ function deleteProduct(id) {
   $("adminFeedback").textContent = "Produto excluído.";
 }
 
-$("productForm").addEventListener("submit", (e) => {
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const scale = Math.min(1, 900 / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/webp", 0.78));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+$("productImageFile")?.addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  const preview = $("productImagePreview");
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    e.target.value = "";
+    preview.hidden = true;
+    preview.style.display = "none";
+    return;
+  }
+  try {
+    preview.src = await compressImage(file);
+    preview.hidden = false;
+    preview.style.display = "block";
+    $("productImageUrl").value = "";
+  } catch {
+    preview.hidden = true;
+    preview.style.display = "none";
+  }
+});
+
+$("productImageUrl")?.addEventListener("input", () => {
+  const preview = $("productImagePreview");
+  if ($("productImageUrl").value.trim()) {
+    preview.src = $("productImageUrl").value.trim();
+    preview.hidden = false;
+    preview.style.display = "block";
+    $("productImageFile").value = "";
+  } else if (!$("productImageFile").files.length) {
+    preview.hidden = true;
+    preview.style.display = "none";
+  }
+});
+
+$("productForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = $("productId").value;
   const p = {
@@ -352,17 +409,33 @@ $("productForm").addEventListener("submit", (e) => {
     name: $("productName").value.trim(),
     category: $("productCategory").value,
     price: Number($("productPrice").value),
-    image: $("productImage").value.trim(),
+    image: $("productImageUrl").value.trim(),
     description: $("productDescription").value.trim(),
     tag: "",
   };
+  const imageFile = $("productImageFile").files[0];
+  if (imageFile) {
+    if (!imageFile.type.startsWith("image/")) {
+      $("adminFeedback").textContent = "Selecione um arquivo de imagem válido.";
+      return;
+    }
+    try {
+      p.image = await compressImage(imageFile);
+    } catch {
+      $("adminFeedback").textContent = "Não foi possível carregar essa imagem. Tente outra.";
+      return;
+    }
+  } else if (id) {
+    const previous = products.find((x) => x.id === id);
+    if (previous && previous.image && previous.image.startsWith("data:") && !p.image) p.image = previous.image;
+  }
   if (!p.name || !Number.isFinite(p.price) || p.price < 0) return;
   products = id ? products.map((x) => (x.id === id ? p : x)) : [p, ...products];
   saveProducts();
   renderAll();
   resetForm();
   $("adminFeedback").textContent = id
-    ? "Produto updated com sucesso."
+    ? "Produto atualizado com sucesso."
     : "Produto cadastrado com sucesso.";
 });
 
@@ -425,6 +498,7 @@ $("credentialsForm").addEventListener("submit", (e) => {
 });
 
 $("searchInput").addEventListener("input", renderProducts);
+$("adminCategoryFilter")?.addEventListener("change", renderAdminList);
 
 $("resetDemo").addEventListener("click", () => {
   if (!confirm("Restaurar a lista de produtos e preços de exemplo? Suas alterações atuais serão substituídas.")) return;
@@ -447,7 +521,7 @@ $("exportData").addEventListener("click", () => {
 });
 
 $("importData").addEventListener("change", async (e) => {
-  const file = e.target.files;
+  const file = e.target.files[0];
   if (!file) return;
   try {
     const data = JSON.parse(await file.text());
