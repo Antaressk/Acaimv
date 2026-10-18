@@ -18,98 +18,54 @@
 
 <body>
 
-    <!-- CABEÇALHO -->
     <header class="site-header">
-        <a class="brand" href="#" aria-label="AçaíMV início">
-            <img
-                src="aimv_logo.png"
-                alt="Logo AçaíMV"
-                class="brand-logo"
-                width="110"
-                height="100"
-            >
+        <a class="brand" href="#cardapio" aria-label="Açaí Delivery MV - início">
+            <img src="aimv_logo.png" alt="Açaí Delivery MV" class="brand-logo" width="140" height="70">
         </a>
-
         <nav class="top-nav" aria-label="Navegação principal">
-            <a href="#cardapio">Cardápio</a>
+            <a class="active" href="#cardapio">Cardápio</a>
             <a href="#sobre">Sobre</a>
         </nav>
+        <label class="search-box header-search">
+            <span aria-hidden="true">⌕</span>
+            <input id="searchInput" type="search" placeholder="O que você procura?" aria-label="Buscar produtos">
+        </label>
     </header>
 
     <main>
-
-        <!-- CARDÁPIO DOS CLIENTES -->
         <section class="menu-section" id="cardapio">
-
-            <div class="section-heading">
-                <div>
-                    <span class="eyebrow">ESCOLHA O QUE TE FAZ FELIZ</span>
-                    <h2>Nosso cardápio</h2>
-                    <p>Encontre seus produtos favoritos por categoria.</p>
-                </div>
-
-                <label class="search-box">
-                    <span>⌕</span>
-                    <input
-                        id="searchInput"
-                        type="search"
-                        placeholder="Buscar no cardápio..."
-                        aria-label="Buscar produtos"
-                    >
-                </label>
+            <div class="menu-intro">
+                <span class="eyebrow">NOSSO CARDÁPIO</span>
+                <h1>Escolha o que te faz feliz <span class="title-heart" aria-hidden="true">♡</span></h1>
+                <p>Produtos fresquinhos, feitos com muito carinho e sabor.</p>
             </div>
 
-            <!-- FILTROS DE CATEGORIA -->
-            <nav
-                class="category-row"
-                id="categories"
-                aria-label="Categorias do cardápio"
-            >
+            <nav class="category-row" id="categories" aria-label="Categorias do cardápio">
                 <!-- As categorias são carregadas pelo app.js -->
             </nav>
 
-            <div class="demo-notice" id="demoNotice">
-                <span>i</span>
-                <strong>Cardápio demonstrativo:</strong>
-                produtos e preços são exemplos e devem ser confirmados pela AçaíMV.
+            <div class="menu-summary" id="menuSummary" aria-live="polite">Carregando produtos...</div>
+            <div class="demo-notice hidden" id="demoNotice">
+                <strong>Cardápio demonstrativo:</strong> produtos e preços de exemplo.
             </div>
 
-            <!-- PRODUTOS FILTRADOS POR CATEGORIA -->
-            <div
-                class="product-grid"
-                id="productGrid"
-                aria-live="polite"
-            >
+            <div class="product-grid" id="productGrid" aria-live="polite">
                 <!-- Os produtos são carregados pelo app.js -->
             </div>
 
             <div class="empty-state hidden" id="emptyState">
-                Não encontramos produtos nesta categoria ou com essa busca.
-                Tente selecionar outra categoria.
+                Não encontramos produtos nesta categoria ou com essa busca. Tente selecionar outra categoria.
             </div>
-
         </section>
 
-        <!-- SOBRE A EMPRESA -->
         <section class="about-strip" id="sobre">
-
-            <div class="about-icon">✳</div>
-
+            <div class="about-icon" aria-hidden="true"><span class="about-heart">♡</span></div>
             <div>
-                <span class="eyebrow">BEM-VINDO À AÇAÍMV</span>
-                <h2>Um sabor para chamar de seu.</h2>
-                <p>
-                    Explore nossas opções e encontre a combinação
-                    perfeita para o seu dia.
-                </p>
+                <span class="eyebrow">AÇAÍ DELIVERY MV</span>
+                <h2>Feito com carinho para você</h2>
+                <p>Escolha seus favoritos e aproveite cada momento.</p>
             </div>
-
-            <a href="#cardapio" class="text-link">
-                Ver cardápio <span>→</span>
-            </a>
-
         </section>
-
     </main>
 
     <!-- RODAPÉ -->
@@ -156,9 +112,8 @@
 
         <!-- LOGIN -->
         <section
-            class="admin-panel"
+            class="admin-panel login-panel"
             id="loginSection"
-            style="max-width:400px; margin:40px auto;"
         >
 
             <div class="admin-head">
@@ -178,11 +133,10 @@
             </div>
 
             <form
-                id="loginForm"
-                style="display:flex; flex-direction:column; gap:15px; margin-top:20px;"
+                id="loginForm" class="login-form"
             >
 
-                <label style="display:flex; flex-direction:column; gap:5px;">
+                <label class="login-label">
                     Usuário
                     <input
                         type="text"
@@ -190,11 +144,11 @@
                         required
                         placeholder="Digite o usuário"
                         autocomplete="username"
-                        style="padding:8px; border:1px solid #ccc; border-radius:4px;"
+                        
                     >
                 </label>
 
-                <label style="display:flex; flex-direction:column; gap:5px;">
+                <label class="login-label">
                     Senha
                     <input
                         type="password"
@@ -202,13 +156,13 @@
                         required
                         placeholder="Digite a senha"
                         autocomplete="current-password"
-                        style="padding:8px; border:1px solid #ccc; border-radius:4px;"
+                        
                     >
                 </label>
 
                 <p
                     id="loginError"
-                    style="color:red; font-size:14px; margin:0; display:none;"
+                    
                 >
                     Usuário ou senha incorretos.
                 </p>
@@ -216,7 +170,7 @@
                 <button
                     class="primary-btn"
                     type="submit"
-                    style="align-self:flex-end; margin-top:10px;"
+                    
                 >
                     Entrar
                 </button>
@@ -296,31 +250,8 @@
                         >
                     </label>
 
-                    <label>
-                         
-<label class="wide">
-    Foto do produto
-    <input
-        id="productImage"
-        type="file"
-        accept="image/*"
-    >
-    <small>Selecione uma imagem do computador ou celular.</small>
-
-    <img
-        id="productImagePreview"
-        alt="Prévia da foto do produto"
-        hidden
-        style="display:none; width:180px; height:140px; object-fit:cover; border-radius:10px; margin-top:10px;"
-    >
-</label>
-
-                        <input
-                            id="productImage"
-                            type="url"
-                            placeholder="https://..."
-                        >
-                    </label>
+                    <label class="wide">Foto do produto<input id="productImageFile" type="file" accept="image/*"><small>Selecione uma imagem do computador ou celular (opcional).</small><img id="productImagePreview" alt="Prévia da foto do produto" hidden></label>
+                    <label class="wide">Ou use o endereço de uma imagem<input id="productImageUrl" type="url" placeholder="https://..."></label>
 
                     <label class="wide">
                         Descrição
