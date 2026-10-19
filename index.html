@@ -36,7 +36,7 @@
         <section class="menu-section" id="cardapio">
             <div class="menu-intro">
                 <span class="eyebrow">NOSSO CARDÁPIO</span>
-                <h1>Escolha o que te faz feliz <span class="title-heart" aria-hidden="true">♡</span></h1>
+                <h1>Escolha o que te faz <span class="title-last-phrase">feliz <span class="title-heart" aria-hidden="true">♡</span></span></h1>
                 <p>Produtos fresquinhos, feitos com muito carinho e sabor.</p>
             </div>
 
@@ -45,9 +45,6 @@
             </nav>
 
             <div class="menu-summary" id="menuSummary" aria-live="polite">Carregando produtos...</div>
-            <div class="demo-notice hidden" id="demoNotice">
-                <strong>Cardápio demonstrativo:</strong> produtos e preços de exemplo.
-            </div>
 
             <div class="product-grid" id="productGrid" aria-live="polite">
                 <!-- Os produtos são carregados pelo app.js -->
@@ -87,8 +84,6 @@
                 AçaíMV. Todos os direitos reservados.
             </span>
 
-            <span class="footer-demo">Versão demonstrativa</span>
-
             <button
                 class="admin-open-link"
                 id="adminOpen"
@@ -100,6 +95,23 @@
         </div>
 
     </footer>
+
+    <!-- DETALHES DO PRODUTO -->
+    <div class="product-detail-backdrop hidden" id="productDetailModal" role="dialog" aria-modal="true" aria-labelledby="productDetailTitle">
+      <section class="product-detail-panel">
+        <button class="product-detail-close" id="closeProductDetail" type="button" aria-label="Fechar detalhes">×</button>
+        <h2 id="productDetailTitle"></h2>
+        <p class="product-detail-category" id="productDetailCategory"></p>
+        <img class="product-detail-image" id="productDetailImage" alt="" hidden>
+        <p class="product-detail-description" id="productDetailDescription"></p>
+        <p class="product-detail-price" id="productDetailPrice"></p>
+      </section>
+    </div>
+
+    <a class="whatsapp-float hidden" id="whatsappFloat" href="#" target="_blank" rel="noopener noreferrer" aria-label="Falar com a AçaíMV pelo WhatsApp">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.04 3.2A12.7 12.7 0 0 0 5.1 22.35L3.3 28.8l6.6-1.73A12.8 12.8 0 1 0 16.04 3.2Zm0 23.25a10.4 10.4 0 0 1-5.3-1.45l-.38-.22-3.92 1.03 1.05-3.82-.25-.4a10.45 10.45 0 1 1 8.8 4.86Zm5.74-7.82c-.31-.16-1.84-.91-2.12-1.02-.29-.1-.5-.16-.71.16-.21.31-.81 1.02-.99 1.23-.18.21-.36.24-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.55-1.84-1.73-2.15-.18-.31-.02-.48.14-.64.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.7-.97-2.33-.25-.61-.51-.53-.71-.54h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.07-1.1 2.6s1.13 3.02 1.29 3.23c.16.21 2.22 3.39 5.38 4.75.75.32 1.34.52 1.8.66.76.24 1.45.2 1.99.12.61-.09 1.84-.75 2.1-1.48.26-.73.26-1.35.18-1.48-.08-.13-.29-.21-.6-.36Z"/></svg>
+        <span>WhatsApp</span>
+    </a>
 
     <!-- MODAL ADMINISTRATIVO -->
     <div
@@ -188,7 +200,7 @@
             <div class="admin-head">
                 <div>
                     <span class="eyebrow">PAINEL DE CONTROLE</span>
-                    <h2>Área administrativa</h2>
+                    <h2>Gestão do cardápio</h2>
                 </div>
 
                 <button
@@ -201,18 +213,30 @@
                 </button>
             </div>
 
+            <div class="admin-dashboard-summary" id="adminDashboardSummary" aria-live="polite">
+                <div><strong id="adminTotalCount">0</strong><span>Produtos cadastrados</span></div>
+                <div><strong id="adminCategoryCount">0</strong><span>Categorias</span></div>
+                <div><strong>Local</strong><span>Salvo neste navegador</span></div>
+            </div>
+
             <div class="admin-warning">
                 <strong>Importante:</strong>
                 as alterações são salvas somente neste navegador.
                 Esta versão não possui autenticação segura via servidor.
             </div>
 
-            <!-- CADASTRO E EDIÇÃO DE PRODUTOS -->
-            <form id="productForm" class="product-form">
+            <div class="admin-toolbar">
+                <div><h3>Produtos do cardápio</h3><p>Gerencie fotos, preços e informações dos produtos.</p></div>
+                <button class="primary-btn" id="showProductForm" type="button">＋ Adicionar produto</button>
+                <button class="settings-toggle" id="toggleSettings" type="button" aria-expanded="false" aria-controls="adminSettings">⚙ Configurações</button>
+            </div>
+
+            <!-- CADASTRO E EDIÇÃO: aparece apenas ao adicionar ou editar -->
+            <form id="productForm" class="product-form hidden">
 
                 <input type="hidden" id="productId">
 
-                <h3>Cadastrar ou editar produto</h3>
+                <h3>Adicionar ou editar produto</h3>
 
                 <div class="form-grid">
 
@@ -287,15 +311,12 @@
             <!-- LISTA ADMINISTRATIVA POR CATEGORIA -->
             <div class="admin-list-head">
                 <div>
-                    <h3>Produtos cadastrados</h3>
+                    <h3>Produtos por categoria</h3>
                     <p>
                         Organize e localize os produtos por categoria.
                     </p>
                 </div>
 
-                <button class="reset-btn" id="resetDemo" type="button">
-                    Restaurar exemplos
-                </button>
             </div>
 
             <div class="admin-category-filter">
@@ -321,18 +342,22 @@
             </div>
 
             <!-- CONFIGURAÇÕES DE ACESSO -->
-            <div
-                class="admin-list-head"
-                style="margin-top:40px; border-top:1px solid #eee; padding-top:20px;"
-            >
-                <h3>Configurações de acesso</h3>
-            </div>
-
-            <form
-                id="credentialsForm"
-                class="product-form"
-                style="margin-top:10px;"
-            >
+            <section id="adminSettings" class="admin-settings hidden" aria-label="Configurações administrativas">
+                <div class="admin-list-head"><div><h3>Configurações</h3><p>Gerencie o contato público da loja e os dados de acesso administrativo.</p></div></div>
+                <button class="secondary-btn settings-back" id="backToProducts" type="button">← Voltar ao cardápio de produtos</button>
+                <form id="whatsappForm" class="product-form settings-form">
+                    <h3>Atendimento pelo WhatsApp</h3>
+                    <p class="settings-help">Informe o número da loja com código do país e DDD. Exemplo: 5584999999999.</p>
+                    <div class="form-grid">
+                        <label class="wide">WhatsApp da loja
+                            <input id="whatsappNumber" type="tel" inputmode="tel" placeholder="55 + DDD + número" autocomplete="tel">
+                        </label>
+                    </div>
+                    <div class="form-actions"><button class="primary-btn" type="submit">Salvar número</button></div>
+                    <p id="whatsappFeedback" class="settings-feedback" role="status" hidden>Número do WhatsApp atualizado.</p>
+                </form>
+                <div class="admin-list-head settings-access-heading"><div><h3>Configurações de acesso</h3><p>Altere o usuário e a senha usados neste navegador.</p></div></div>
+                <form id="credentialsForm" class="product-form settings-form">
 
                 <div class="form-grid">
 
@@ -376,7 +401,8 @@
                     Acesso atualizado com sucesso!
                 </p>
 
-            </form>
+                </form>
+            </section>
 
             <!-- IMPORTAÇÃO E EXPORTAÇÃO -->
             <div class="admin-footer" style="margin-top:30px;">

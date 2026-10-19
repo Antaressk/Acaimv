@@ -1839,7 +1839,12 @@ body {
   font-size: 15px;
   line-height: 1.6;
 }
+.title-last-phrase {
+  white-space: nowrap;
+}
 .title-heart {
+  display: inline-block;
+  vertical-align: baseline;
   color: var(--purple);
   font-size: 1.1em;
   margin-left: 8px;
@@ -2625,5 +2630,321 @@ footer .brand-logo {
   }
   #productGrid .product-price {
     font-size: 14px;
+  }
+}
+
+
+/* ===== Painel ADM AçaíMV — layout organizado inspirado na referência ===== */
+.modal-backdrop:has(#adminPanelSection:not(.hidden)) {
+  display: block;
+  overflow-y: auto;
+  background: #fffafb;
+  backdrop-filter: none;
+  padding: 0;
+}
+#adminPanelSection.admin-panel {
+  width: 100%;
+  min-height: 100%;
+  height: auto;
+  overflow: visible;
+  padding: clamp(22px, 4vw, 54px);
+  background: #fffafb;
+  color: #25162b;
+  box-shadow: none;
+}
+#adminPanelSection .admin-head {
+  align-items: center;
+  border-bottom: 1px solid #f0e1e9;
+  padding-bottom: 22px;
+  margin-bottom: 24px;
+}
+#adminPanelSection .admin-head h2 { font-size: clamp(25px, 3vw, 34px); margin: 4px 0 0; }
+#adminPanelSection .admin-head .eyebrow { color: #c90072; letter-spacing: .08em; }
+#adminPanelSection .icon-btn {
+  border-radius: 10px; width: 42px; height: 42px; color: #37253a;
+}
+.admin-dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 22px;
+}
+.admin-dashboard-summary > div {
+  display: flex; flex-direction: column; gap: 5px;
+  padding: 17px 19px; border: 1px solid #f0e1e9; border-radius: 12px;
+  background: #fff; min-width: 0;
+}
+.admin-dashboard-summary strong { font-size: 23px; color: #d90079; }
+.admin-dashboard-summary span { color: #776b7b; font-size: 13px; }
+#adminPanelSection .admin-warning {
+  border: 1px solid #f0dce7; background: #fbf0f6; color: #72536a;
+  border-radius: 10px; padding: 15px 18px; margin-bottom: 24px;
+}
+#adminPanelSection .product-form {
+  background: #fff; border: 1px solid #efdee7; border-radius: 13px;
+  padding: clamp(18px, 2.5vw, 28px); margin: 0 0 28px; box-shadow: 0 3px 12px #3b183008;
+}
+#adminPanelSection .product-form h3,
+#adminPanelSection .admin-list-head h3 { font-size: 21px; margin: 0 0 8px; }
+#adminPanelSection .form-grid { gap: 16px; }
+#adminPanelSection input, #adminPanelSection select {
+  border-radius: 8px; border-color: #e8dce5; min-height: 42px;
+}
+#adminPanelSection .form-actions { margin-top: 18px; }
+#adminPanelSection .primary-btn { background: #d90079; border-radius: 9px; }
+#adminPanelSection .admin-list-head {
+  margin-top: 26px; padding: 0 0 16px; border-bottom: 1px solid #efdee7;
+  align-items: center; gap: 15px;
+}
+#adminPanelSection .admin-list-head p { margin: 4px 0 0; color: #817486; }
+#adminPanelSection .admin-category-filter {
+  display: flex; align-items: center; gap: 14px; margin: 18px 0 20px;
+}
+#adminPanelSection .admin-category-filter label { font-size: 13px; color: #716575; }
+#adminPanelSection .admin-category-filter select { max-width: 260px; }
+#adminPanelSection .admin-product-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+#adminPanelSection .admin-product {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto;
+  align-items: center; gap: 15px; background: #fff; border: 1px solid #ecdee6;
+  border-radius: 9px; padding: 15px 17px; min-height: 78px;
+}
+#adminPanelSection .admin-product .mini-placeholder {
+  width: 40px; height: 40px; border-radius: 9px; background: #fff0f7;
+  color: #d90079; display: grid; place-items: center;
+}
+#adminPanelSection .admin-product .mini-placeholder svg { width: 22px; height: 22px; }
+#adminPanelSection .admin-product-main { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+#adminPanelSection .admin-product-main strong { font-size: 16px; font-weight: 600; }
+#adminPanelSection .admin-product-main small { font-size: 12px; color: #8b7e8d; }
+#adminPanelSection .admin-product-price { font-size: 14px; white-space: nowrap; color: #72566e; }
+#adminPanelSection .admin-actions { display: flex; gap: 7px; }
+#adminPanelSection .admin-actions button, #adminPanelSection .reset-btn,
+#adminPanelSection .secondary-btn, #adminPanelSection .import-btn {
+  border: 1px solid #eadce6; background: #fff; border-radius: 8px; padding: 10px 13px;
+  color: #342339; cursor: pointer; font: inherit; font-size: 13px;
+}
+#adminPanelSection .admin-actions .delete-btn { color: #b12c56; }
+#adminPanelSection .admin-footer { display: flex; flex-wrap: wrap; gap: 10px; }
+#adminPanelSection .admin-feedback { color: #8b155c; }
+@media (max-width: 650px) {
+  #adminPanelSection.admin-panel { padding: 20px 14px 34px; }
+  .admin-dashboard-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-dashboard-summary > div:last-child { grid-column: 1 / -1; }
+  #adminPanelSection .admin-product { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 13px; }
+  #adminPanelSection .admin-product .mini-placeholder { width: 32px; height: 32px; }
+  #adminPanelSection .admin-product-price { grid-column: 2; }
+  #adminPanelSection .admin-actions { grid-column: 2; flex-wrap: wrap; }
+  #adminPanelSection .admin-category-filter { align-items: stretch; flex-direction: column; gap: 7px; }
+  #adminPanelSection .admin-category-filter select { max-width: none; width: 100%; }
+  #adminPanelSection .admin-list-head { align-items: flex-start; flex-direction: column; }
+}
+
+#adminPanelSection .admin-category-group { margin-bottom: 20px; }
+#adminPanelSection .admin-category-title { display:flex; align-items:center; gap:12px; padding: 10px 0 13px; margin-bottom:10px; border-bottom:1px solid #efdee7; }
+#adminPanelSection .admin-category-title h4 { margin:0; font-size:20px; font-weight:600; }
+#adminPanelSection .admin-category-title span { color:#8b7e8d; font-size:12px; }
+
+
+/* Modal de detalhes do produto — visual inspirado na referência enviada */
+.product-card-clickable { cursor: pointer; }
+.product-card-clickable:focus-visible { outline: 3px solid var(--purple, #e6007e); outline-offset: 3px; }
+.product-detail-backdrop {
+  position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center;
+  padding: 24px; background: rgba(20, 17, 20, .82); overflow-y: auto;
+}
+.product-detail-panel {
+  position: relative; width: min(100%, 512px); max-height: calc(100dvh - 48px); overflow-y: auto;
+  padding: 22px 24px 24px; background: #fffafb; color: #302b35; border: 1px solid #eee3e9;
+  border-radius: 9px; box-shadow: 0 18px 60px rgba(0,0,0,.22);
+}
+.product-detail-panel h2 { margin: 0 42px 4px 0; font-size: 19px; line-height: 1.35; font-weight: 700; }
+.product-detail-category { margin: 0 0 17px; color: #827780; font-size: 14px; }
+.product-detail-close {
+  position: absolute; top: 12px; right: 12px; width: 25px; height: 25px; display: grid; place-items: center;
+  padding: 0; border: 2px solid #e600a0; border-radius: 8px; background: transparent; color: #302b35;
+  font-size: 22px; line-height: 1; cursor: pointer;
+}
+.product-detail-image { display: block; width: 100%; max-height: 48vh; object-fit: contain; border-radius: 5px; margin: 0 0 16px; background: transparent; }
+.product-detail-description { margin: 0 0 17px; font-size: 16px; line-height: 1.5; white-space: pre-line; }
+.product-detail-price { margin: 0 0 17px; color: #e6007e; font-size: 16px; font-weight: 700; }
+.product-detail-note { margin: 0; color: #827780; font-size: 12px; line-height: 1.45; }
+body.product-detail-open { overflow: hidden; }
+@media (max-width: 540px) {
+  .product-detail-backdrop { padding: 12px; align-items: center; }
+  .product-detail-panel { padding: 20px 17px; max-height: calc(100dvh - 24px); }
+  .product-detail-image { max-height: 42vh; }
+  .product-detail-description { font-size: 15px; }
+}
+
+/* Melhorias do painel administrativo: ações claras, formulário sob demanda e miniaturas reais */
+#adminPanelSection .admin-toolbar {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+  margin: 4px 0 24px; padding: 18px; border: 1px solid #efdee7;
+  border-radius: 13px; background: #fff;
+}
+#adminPanelSection .admin-toolbar > div { flex: 1 1 220px; min-width: 0; }
+#adminPanelSection .admin-toolbar h3 { margin: 0 0 5px; font-size: 20px; }
+#adminPanelSection .admin-toolbar p { margin: 0; color: #817486; font-size: 13px; }
+#adminPanelSection #showProductForm { min-height: 43px; padding: 11px 17px; }
+#adminPanelSection .settings-toggle {
+  min-height: 43px; padding: 10px 14px; border: 1px solid #eadce6; border-radius: 9px;
+  background: #fff; color: #342339; cursor: pointer; font: inherit; font-size: 14px;
+}
+#adminPanelSection #productForm:not(.hidden) { margin-top: 0; scroll-margin-top: 18px; }
+#adminPanelSection .admin-settings { margin-top: 28px; padding-top: 6px; scroll-margin-top: 20px; }
+#adminPanelSection .admin-settings .admin-list-head { margin-top: 0; }
+#adminPanelSection .admin-settings .settings-form { margin-top: 12px; }
+#adminPanelSection .admin-product-thumb {
+  display: block; width: 48px; height: 48px; object-fit: cover; border-radius: 9px;
+  border: 1px solid #f0e3eb; background: #fff; flex: none;
+}
+#adminPanelSection .admin-product { grid-template-columns: 48px minmax(0, 1fr) auto auto; }
+#adminPanelSection .admin-product .mini-placeholder { width: 48px; height: 48px; }
+#adminPanelSection .admin-product .admin-actions button { min-height: 36px; }
+@media (max-width: 650px) {
+  #adminPanelSection .admin-toolbar { align-items: stretch; padding: 14px; }
+  #adminPanelSection .admin-toolbar > div { flex-basis: 100%; }
+  #adminPanelSection .admin-toolbar button { flex: 1 1 auto; }
+  #adminPanelSection .admin-product { grid-template-columns: 40px minmax(0, 1fr); }
+  #adminPanelSection .admin-product-thumb,
+  #adminPanelSection .admin-product .mini-placeholder { width: 40px; height: 40px; }
+}
+
+/* Contato público da loja: botão discreto e responsivo do WhatsApp */
+.whatsapp-float {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 50px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.whatsapp-float:hover { transform: translateY(-2px); box-shadow: 0 11px 28px rgba(0, 0, 0, .22); }
+.whatsapp-float svg { width: 24px; height: 24px; fill: currentColor; }
+#adminPanelSection .settings-back { margin: 0 0 20px; }
+#adminPanelSection .settings-help { color: #817486; margin: -5px 0 14px; font-size: 13px; }
+#adminPanelSection .settings-feedback { color: #27734b; font-size: 13px; margin: 10px 0 0; }
+#adminPanelSection .settings-access-heading { margin-top: 28px; }
+@media (max-width: 520px) {
+  .whatsapp-float { right: 14px; bottom: 14px; min-height: 48px; padding: 0 15px; }
+}
+
+/* Refinamento visual: WhatsApp e busca alinhados */
+.header-search {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  flex: 0 1 435px;
+  min-width: 0;
+  height: 46px;
+  padding: 0 17px;
+  gap: 11px;
+  border: 1px solid #eee3ec;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(54, 28, 48, .045);
+}
+.header-search > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  font-size: 0;
+  transform: none;
+  color: #8a7187;
+}
+.header-search > span::before {
+  content: "";
+  display: block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  transform: translate(-2px, -2px);
+}
+.header-search > span::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: translate(6px, 6px) rotate(45deg);
+}
+.header-search input {
+  box-sizing: border-box;
+  display: block;
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  line-height: normal;
+  background: transparent;
+  font-size: 13px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.header-search:focus-within {
+  border-color: #e6a3ce;
+  box-shadow: 0 0 0 3px rgba(230, 0, 126, .08);
+}
+.whatsapp-float {
+  min-height: 54px;
+  padding: 0 21px 0 18px;
+  gap: 10px;
+  border: 1px solid rgba(255,255,255,.42);
+  border-radius: 999px;
+  background: #20bd5a;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(18, 133, 65, .24), 0 2px 5px rgba(0,0,0,.08);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .1px;
+}
+.whatsapp-float:hover {
+  background: #18aa4e;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(18, 133, 65, .28);
+}
+.whatsapp-float svg {
+  display: block;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  fill: currentColor;
+}
+@media (max-width: 650px) {
+  .header-search {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    height: 43px;
+    margin: 0 0 5px;
+    padding-inline: 15px;
+  }
+  .whatsapp-float {
+    right: 15px;
+    bottom: max(15px, env(safe-area-inset-bottom));
+    min-height: 50px;
+    padding: 0 17px;
+    font-size: 13px;
   }
 }

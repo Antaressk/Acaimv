@@ -230,7 +230,7 @@ function renderProducts() {
       </div>
       <div class="menu-category-products">
         ${items.map((p) => `
-          <article class="product-card">
+          <article class="product-card product-card-clickable" data-product-id="${safeText(p.id)}" tabindex="0" role="button" aria-label="Ver detalhes de ${safeText(p.name)}">
             <div class="product-image">
               ${p.image
                 ? `<img loading="lazy" src="${safeText(p.image)}" alt="${safeText(p.name)}" onerror="this.hidden=true;this.nextElementSibling.hidden=false">`
@@ -306,12 +306,6 @@ function renderAll() {
   renderProducts();
   fillCategorySelect();
   renderAdminList();
-  if ($("demoNotice")) {
-    $("demoNotice").classList.toggle(
-      "hidden",
-      !products.some((p) => String(p.id).startsWith("demo-")),
-    );
-  }
 }
 function resetForm() {
   $("productForm").reset();
@@ -334,6 +328,9 @@ function editProduct(id) {
   else { preview.removeAttribute("src"); preview.hidden = true; preview.style.display = "none"; }
   $("productDescription").value = p.description || "";
   $("saveProduct").innerHTML = "Atualizar produto <span>✓</span>";
+  $("productForm").classList.remove("hidden");
+  $("showProductForm").textContent = "＋ Novo produto";
+  $("productForm").scrollIntoView({ behavior: "smooth", block: "start" });
   $("productName").focus();
 }
 function deleteProduct(id) {
@@ -434,6 +431,8 @@ $("productForm").addEventListener("submit", async (e) => {
   saveProducts();
   renderAll();
   resetForm();
+  $("productForm").classList.add("hidden");
+  $("showProductForm").textContent = "＋ Adicionar produto";
   $("adminFeedback").textContent = id
     ? "Produto atualizado com sucesso."
     : "Produto cadastrado com sucesso.";
@@ -441,7 +440,74 @@ $("productForm").addEventListener("submit", async (e) => {
 
 $("cancelEdit").addEventListener("click", () => {
   resetForm();
+  $("productForm").classList.add("hidden");
+  $("showProductForm").textContent = "＋ Adicionar produto";
   $("adminFeedback").textContent = "";
+});
+
+$("showProductForm")?.addEventListener("click", () => {
+  const form = $("productForm");
+  const opening = form.classList.contains("hidden");
+  if (opening) {
+    resetForm();
+    form.classList.remove("hidden");
+    $("showProductForm").textContent = "× Fechar formulário";
+    form.scrollIntoView({ behavior: "smooth", block: "start" });
+    $("productName").focus({ preventScroll: true });
+  } else {
+    resetForm();
+    form.classList.add("hidden");
+    $("showProductForm").textContent = "＋ Adicionar produto";
+  }
+});
+
+function setAdminView(view) {
+  const settingsView = view === "settings";
+  [".admin-warning", ".admin-toolbar", ".admin-category-filter", "#adminProductList", ".admin-footer"].forEach((selector) => {
+    document.querySelectorAll(`#adminPanelSection ${selector}`).forEach((element) => element.classList.toggle("hidden", settingsView));
+  });
+  document.querySelectorAll("#adminPanelSection > .admin-list-head").forEach((element) => element.classList.toggle("hidden", settingsView));
+  if (settingsView) {
+    $("productForm").classList.add("hidden");
+    resetForm();
+    $("showProductForm").textContent = "＋ Adicionar produto";
+  }
+  $("adminSettings").classList.toggle("hidden", !settingsView);
+  $("toggleSettings")?.setAttribute("aria-expanded", String(settingsView));
+  if (settingsView) {
+    $("whatsappNumber").value = localStorage.getItem("acaimvWhatsappNumber") || "";
+    $("adminSettings").scrollIntoView({ behavior: "smooth", block: "start" });
+  } else {
+    $("adminProductList").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+$("toggleSettings")?.addEventListener("click", () => setAdminView("settings"));
+$("backToProducts")?.addEventListener("click", () => setAdminView("products"));
+
+function refreshWhatsappButton() {
+  const button = $("whatsappFloat");
+  if (!button) return;
+  const number = (localStorage.getItem("acaimvWhatsappNumber") || "").replace(/\D/g, "");
+  if (number.length >= 10) {
+    button.href = `https://wa.me/${number}`;
+    button.classList.remove("hidden");
+  } else {
+    button.classList.add("hidden");
+    button.removeAttribute("href");
+  }
+}
+$("whatsappForm")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const number = $("whatsappNumber").value.replace(/\D/g, "");
+  if (number && number.length < 10) {
+    $("whatsappFeedback").textContent = "Confira o número: inclua o código do país, DDD e telefone.";
+    $("whatsappFeedback").hidden = false;
+    return;
+  }
+  localStorage.setItem("acaimvWhatsappNumber", number);
+  $("whatsappFeedback").textContent = number ? "Número do WhatsApp atualizado." : "Botão do WhatsApp ocultado porque o número foi removido.";
+  $("whatsappFeedback").hidden = false;
+  refreshWhatsappButton();
 });
 
 // Controle de Telas (Acesso Restrito / Login / Painel)
@@ -479,6 +545,7 @@ $("loginForm").addEventListener("submit", (e) => {
   if (userInput === localStorage.getItem("adminUser") && passwordInput === localStorage.getItem("adminPassword")) {
     $("loginSection").classList.add("hidden");
     $("adminPanelSection").classList.remove("hidden");
+    setAdminView("products");
     renderAll();
   } else {
     $("loginError").style.display = "block";
@@ -500,14 +567,7 @@ $("credentialsForm").addEventListener("submit", (e) => {
 $("searchInput").addEventListener("input", renderProducts);
 $("adminCategoryFilter")?.addEventListener("change", renderAdminList);
 
-$("resetDemo").addEventListener("click", () => {
-  if (!confirm("Restaurar a lista de produtos e preços de exemplo? Suas alterações atuais serão substituídas.")) return;
-  products = structuredClone(DEMO_PRODUCTS);
-  saveProducts();
-  activeCategory = "Todos";
-  renderAll();
-  $("adminFeedback").textContent = "Catálogo de demonstração restaurado.";
-});
+
 
 $("exportData").addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
@@ -545,6 +605,69 @@ $("importData").addEventListener("change", async (e) => {
   e.target.value = "";
 });
 
+// Janela de detalhes: clique/toque em qualquer produto para ampliar a imagem e ver informações.
+function openProductDetails(productId) {
+  const product = products.find((item) => String(item.id) === String(productId));
+  if (!product) return;
+  $("productDetailTitle").textContent = product.name || "Produto";
+  $("productDetailCategory").textContent = product.category || "";
+  $("productDetailDescription").textContent = product.description || "Consulte a loja para mais detalhes sobre este produto.";
+  $("productDetailPrice").textContent = money(product.price);
+  const image = $("productDetailImage");
+  if (product.image) {
+    image.src = product.image;
+    image.alt = product.name || "Imagem do produto";
+    image.hidden = false;
+    image.onerror = () => { image.hidden = true; };
+  } else {
+    image.removeAttribute("src");
+    image.hidden = true;
+  }
+  $("productDetailModal").classList.remove("hidden");
+  document.body.classList.add("product-detail-open");
+  $("closeProductDetail").focus();
+}
+function closeProductDetails() {
+  $("productDetailModal").classList.add("hidden");
+  document.body.classList.remove("product-detail-open");
+}
+$("productGrid").addEventListener("click", (event) => {
+  if (event.target.closest("a, button, input, select, textarea")) return;
+  const card = event.target.closest(".product-card[data-product-id]");
+  if (card) openProductDetails(card.dataset.productId);
+});
+$("productGrid").addEventListener("keydown", (event) => {
+  if ((event.key === "Enter" || event.key === " ") && event.target.matches(".product-card[data-product-id]")) {
+    event.preventDefault();
+    openProductDetails(event.target.dataset.productId);
+  }
+});
+$("closeProductDetail").addEventListener("click", closeProductDetails);
+$("productDetailModal").addEventListener("click", (event) => {
+  if (event.target === $("productDetailModal")) closeProductDetails();
+});
+
 // Inicialização segura ao carregar a página
 $("year").textContent = new Date().getFullYear();
+refreshWhatsappButton();
 renderAll();
+
+// Renderização organizada do painel administrativo por categoria.
+function renderAdminList() {
+  const list = $("adminProductList");
+  if (!list) return;
+  const selectedCategory = $("adminCategoryFilter")?.value || "todas";
+  const categories = [...new Set(products.map((p) => p.category))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const visibleProducts = selectedCategory === "todas" ? products : products.filter((p) => p.category === selectedCategory);
+  if ($("adminTotalCount")) $("adminTotalCount").textContent = products.length;
+  if ($("adminCategoryCount")) $("adminCategoryCount").textContent = categories.length;
+  list.innerHTML = categories
+    .filter((category) => selectedCategory === "todas" || category === selectedCategory)
+    .map((category) => {
+      const items = visibleProducts.filter((p) => p.category === category);
+      if (!items.length) return "";
+      return `<section class="admin-category-group"><div class="admin-category-title"><h4>${safeText(category)}</h4><span>${items.length} ${items.length === 1 ? "produto" : "produtos"}</span></div>${items.map((p) => `<div class="admin-product">${p.image ? `<img class="admin-product-thumb" src="${safeText(p.image)}" alt="Foto de ${safeText(p.name)}" loading="lazy">` : `<div class="mini-placeholder">${categoryIcon(p.category)}</div>`}<div class="admin-product-main"><strong>${safeText(p.name)}</strong><small>${safeText(p.description || category)}</small></div><span class="admin-product-price">${money(p.price)}</span><div class="admin-actions"><button type="button" data-edit="${safeText(p.id)}">Editar</button><button type="button" class="delete-btn" data-delete="${safeText(p.id)}" aria-label="Excluir ${safeText(p.name)}">Excluir</button></div></div>`).join("")}</section>`;
+    }).join("") || '<p class="empty-state">Nenhum produto cadastrado nesta categoria. Use “Adicionar produto” para começar.</p>';
+  list.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => editProduct(b.dataset.edit)));
+  list.querySelectorAll("[data-delete]").forEach((b) => b.addEventListener("click", () => deleteProduct(b.dataset.delete)));
+}
